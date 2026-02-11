@@ -45,10 +45,6 @@ export default function LoginPage() {
         return;
       }
     } else if (isAdminMode) {
-      if (!name.trim()) {
-        setError('이름을 입력해주세요.');
-        return;
-      }
       if (!adminCode.trim()) {
         setError('관리자 코드를 입력해주세요.');
         return;
@@ -69,7 +65,6 @@ export default function LoginPage() {
       if (isRootMode) {
         payload.rootCode = rootCode.trim();
       } else if (isAdminMode) {
-        payload.name = name.trim();
         payload.adminCode = adminCode.trim();
       } else {
         payload.studentId = studentId.trim();
@@ -145,42 +140,24 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Admin mode: name + admin code */}
+          {/* Admin mode: only admin code */}
           {isAdminMode && !isRootMode && (
-            <>
-              <div className={`form-group ${focused === 'name' ? 'focused' : ''} ${name ? 'has-value' : ''}`}>
-                <label htmlFor="name">이름</label>
-                <div className="input-wrapper">
-                  <User size={18} className="input-icon" />
-                  <input
-                    id="name"
-                    type="text"
-                    className="input-field"
-                    placeholder="이름을 입력하세요"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    onFocus={() => setFocused('name')}
-                    onBlur={() => setFocused('')}
-                  />
-                </div>
+            <div className={`form-group admin-code-group ${focused === 'adminCode' ? 'focused' : ''} ${adminCode ? 'has-value' : ''}`}>
+              <label htmlFor="adminCode">관리자 코드</label>
+              <div className="input-wrapper">
+                <Lock size={18} className="input-icon" />
+                <input
+                  id="adminCode"
+                  type="password"
+                  className="input-field"
+                  placeholder="관리자 코드를 입력하세요"
+                  value={adminCode}
+                  onChange={(e) => setAdminCode(e.target.value)}
+                  onFocus={() => setFocused('adminCode')}
+                  onBlur={() => setFocused('')}
+                />
               </div>
-              <div className={`form-group admin-code-group ${focused === 'adminCode' ? 'focused' : ''} ${adminCode ? 'has-value' : ''}`}>
-                <label htmlFor="adminCode">관리자 코드</label>
-                <div className="input-wrapper">
-                  <Lock size={18} className="input-icon" />
-                  <input
-                    id="adminCode"
-                    type="password"
-                    className="input-field"
-                    placeholder="관리자 코드를 입력하세요"
-                    value={adminCode}
-                    onChange={(e) => setAdminCode(e.target.value)}
-                    onFocus={() => setFocused('adminCode')}
-                    onBlur={() => setFocused('')}
-                  />
-                </div>
-              </div>
-            </>
+            </div>
           )}
 
           {/* Student mode: studentId + name + phone */}
@@ -256,6 +233,7 @@ export default function LoginPage() {
               setIsAdminMode(!isAdminMode);
               setAdminCode('');
               setStudentId('');
+              setName('');
               setPhone('');
               setError('');
             }}
