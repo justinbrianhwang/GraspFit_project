@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import * as ort from 'onnxruntime-web';
-import { MODEL_PATH, MODEL_META_PATH } from '../lib/constants';
+import { MODEL_PATH, MODEL_META_PATH, API_BASE_URL } from '../lib/constants';
 import { calculateMSE, classifyGrip } from '../lib/gripClassifier';
 import type { ModelMeta } from '../types';
 
@@ -8,6 +8,7 @@ export function useOnnxModel() {
   const sessionRef = useRef<ort.InferenceSession | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [meta, setMeta] = useState<ModelMeta | null>(null);
+  const [threshold, setThreshold] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -15,10 +16,25 @@ export function useOnnxModel() {
 
     async function loadModel() {
       try {
+        // Load model metadata (architecture info + fallback threshold)
         const metaRes = await fetch(MODEL_META_PATH);
         const metaData: ModelMeta = await metaRes.json();
         if (cancelled) return;
         setMeta(metaData);
+
+        // Fetch threshold from backend API, fallback to model_meta value
+        let activeThreshold = metaData.threshold_train95;
+        try {
+          const threshRes = await fetch(`${API_BASE_URL}/api/settings/threshold`);
+          if (threshRes.ok) {
+            const threshData = await threshRes.json();
+            activeThreshold = threshData.threshold;
+          }
+        } catch {
+          console.warn('Threshold API unavailable, using model_meta default');
+        }
+        if (cancelled) return;
+        setThreshold(activeThreshold);
 
         ort.env.wasm.numThreads = 1;
 
@@ -40,6 +56,18 @@ export function useOnnxModel() {
     return () => { cancelled = true; };
   }, []);
 
+  const refreshThreshold = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/settings/threshold`);
+      if (res.ok) {
+        const data = await res.json();
+        setThreshold(data.threshold);
+      }
+    } catch {
+      // silent fail
+    }
+  }, []);
+
   const runInference = async (
     keypoints: Float32Array
   ): Promise<{
@@ -47,7 +75,7 @@ export function useOnnxModel() {
     isCorrectGrip: boolean;
     confidence: number;
   }> => {
-    if (!sessionRef.current || !meta) {
+    if (!sessionRef.current || threshold === null) {
       throw new Error('Model not loaded');
     }
 
@@ -56,10 +84,10 @@ export function useOnnxModel() {
     const output = results.reconstructed.data as Float32Array;
 
     const mse = calculateMSE(keypoints, output);
-    const { isCorrect, confidence } = classifyGrip(mse, meta.threshold_train95);
+    const { isCorrect, confidence } = classifyGrip(mse, threshold);
 
     return { reconstructionError: mse, isCorrectGrip: isCorrect, confidence };
   };
 
-  return { isLoaded, error, meta, runInference };
+  return { isLoaded, error, meta, threshold, refreshThreshold, runInference };
 }
