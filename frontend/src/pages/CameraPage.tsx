@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, SwitchCamera, Circle, Square, CheckCircle, Clock, BarChart3 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -24,6 +24,27 @@ export default function CameraPage() {
   const [showResult, setShowResult] = useState(false);
   const [videoDimensions, setVideoDimensions] = useState({ w: 640, h: 480 });
   const [modelsLoading, setModelsLoading] = useState(true);
+
+  // Warning beep state
+  const wasCorrectRef = useRef<boolean | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+
+  const playWarningBeep = useCallback(() => {
+    if (!audioCtxRef.current) {
+      audioCtxRef.current = new AudioContext();
+    }
+    const ctx = audioCtxRef.current;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 440;
+    gain.gain.value = 0.3;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.stop(ctx.currentTime + 0.3);
+  }, []);
 
   // Initialize models on mount
   useEffect(() => {
@@ -67,6 +88,16 @@ export default function CameraPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [grip.lastResult, isPracticing]);
 
+  // Warning beep on correct → incorrect transition
+  useEffect(() => {
+    if (!isPracticing || !grip.lastResult) return;
+    const isCorrect = grip.lastResult.isCorrectGrip;
+    if (wasCorrectRef.current === true && !isCorrect) {
+      playWarningBeep();
+    }
+    wasCorrectRef.current = isCorrect;
+  }, [grip.lastResult, isPracticing, playWarningBeep]);
+
   const handleStartPractice = () => {
     if (!videoElRef.current) return;
     setIsPracticing(true);
@@ -76,6 +107,7 @@ export default function CameraPage() {
 
   const handleStopPractice = () => {
     setIsPracticing(false);
+    wasCorrectRef.current = null;
     const session = timer.stop();
     const lastMse = grip.lastResult?.reconstructionError ?? 0;
     const lastConfidence = grip.lastResult?.confidence ?? 0;
@@ -153,6 +185,15 @@ export default function CameraPage() {
           playsInline
           muted
           onLoadedMetadata={handleVideoResize}
+        />
+
+        {/* Red overlay for incorrect grip */}
+        <div
+          className={`grip-feedback-overlay${
+            isPracticing && grip.lastResult && !grip.lastResult.isCorrectGrip && grip.handDetected
+              ? ' incorrect-active'
+              : ''
+          }`}
         />
 
         {isPracticing && (

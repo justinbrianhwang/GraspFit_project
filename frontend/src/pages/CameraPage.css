@@ -128,6 +128,19 @@
   animation: pulse 1.2s infinite;
 }
 
+/* Grip feedback overlay (red flash for incorrect) */
+.grip-feedback-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(244, 67, 54, 0);
+  pointer-events: none;
+  z-index: 4;
+  transition: background 0.4s ease;
+}
+.grip-feedback-overlay.incorrect-active {
+  background: rgba(244, 67, 54, 0.25);
+}
+
 /* Overlays */
 .overlay-top-left {
   position: absolute;

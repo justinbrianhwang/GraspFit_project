@@ -27,36 +27,57 @@ export default function LoginPage() {
       setIsRootMode(true);
       setIsAdminMode(false);
       setAdminCode('');
+      setStudentId('');
+      setName('');
+      setPhone('');
+      setError('');
       setLogoTapCount(0);
     }
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!studentId.trim() || !name.trim() || !phone.trim()) {
-      setError('모든 항목을 입력해주세요.');
-      return;
-    }
-    if (isRootMode && !rootCode.trim()) {
-      setError('개발자 코드를 입력해주세요.');
-      return;
-    }
-    if (isAdminMode && !adminCode.trim()) {
-      setError('관리자 코드를 입력해주세요.');
-      return;
+
+    // Role-based validation
+    if (isRootMode) {
+      if (!rootCode.trim()) {
+        setError('개발자 코드를 입력해주세요.');
+        return;
+      }
+    } else if (isAdminMode) {
+      if (!name.trim()) {
+        setError('이름을 입력해주세요.');
+        return;
+      }
+      if (!adminCode.trim()) {
+        setError('관리자 코드를 입력해주세요.');
+        return;
+      }
+    } else {
+      if (!studentId.trim() || !name.trim() || !phone.trim()) {
+        setError('모든 항목을 입력해주세요.');
+        return;
+      }
     }
 
     setLoading(true);
     setError('');
 
     try {
-      const userData = await api.createUser({
-        studentId: studentId.trim(),
-        name: name.trim(),
-        phone: phone.trim(),
-        ...(isRootMode ? { rootCode: rootCode.trim() } : {}),
-        ...(isAdminMode ? { adminCode: adminCode.trim() } : {}),
-      });
+      // Build payload with only needed fields
+      const payload: Record<string, string> = {};
+      if (isRootMode) {
+        payload.rootCode = rootCode.trim();
+      } else if (isAdminMode) {
+        payload.name = name.trim();
+        payload.adminCode = adminCode.trim();
+      } else {
+        payload.studentId = studentId.trim();
+        payload.name = name.trim();
+        payload.phone = phone.trim();
+      }
+
+      const userData = await api.createUser(payload);
       login(userData);
       if (userData.role === 'root') navigate('/root');
       else if (userData.role === 'admin') navigate('/admin');
@@ -104,76 +125,7 @@ export default function LoginPage() {
           )}
           <h2>{formTitle}</h2>
 
-          <div className={`form-group ${focused === 'studentId' ? 'focused' : ''} ${studentId ? 'has-value' : ''}`}>
-            <label htmlFor="studentId">학번</label>
-            <div className="input-wrapper">
-              <Hash size={18} className="input-icon" />
-              <input
-                id="studentId"
-                type="text"
-                className="input-field"
-                placeholder="학번을 입력하세요"
-                value={studentId}
-                onChange={(e) => setStudentId(e.target.value)}
-                onFocus={() => setFocused('studentId')}
-                onBlur={() => setFocused('')}
-              />
-            </div>
-          </div>
-
-          <div className={`form-group ${focused === 'name' ? 'focused' : ''} ${name ? 'has-value' : ''}`}>
-            <label htmlFor="name">이름</label>
-            <div className="input-wrapper">
-              <User size={18} className="input-icon" />
-              <input
-                id="name"
-                type="text"
-                className="input-field"
-                placeholder="이름을 입력하세요"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                onFocus={() => setFocused('name')}
-                onBlur={() => setFocused('')}
-              />
-            </div>
-          </div>
-
-          <div className={`form-group ${focused === 'phone' ? 'focused' : ''} ${phone ? 'has-value' : ''}`}>
-            <label htmlFor="phone">전화번호</label>
-            <div className="input-wrapper">
-              <Phone size={18} className="input-icon" />
-              <input
-                id="phone"
-                type="tel"
-                className="input-field"
-                placeholder="010-0000-0000"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                onFocus={() => setFocused('phone')}
-                onBlur={() => setFocused('')}
-              />
-            </div>
-          </div>
-
-          {isAdminMode && (
-            <div className={`form-group admin-code-group ${focused === 'adminCode' ? 'focused' : ''} ${adminCode ? 'has-value' : ''}`}>
-              <label htmlFor="adminCode">관리자 코드</label>
-              <div className="input-wrapper">
-                <Lock size={18} className="input-icon" />
-                <input
-                  id="adminCode"
-                  type="password"
-                  className="input-field"
-                  placeholder="관리자 코드를 입력하세요"
-                  value={adminCode}
-                  onChange={(e) => setAdminCode(e.target.value)}
-                  onFocus={() => setFocused('adminCode')}
-                  onBlur={() => setFocused('')}
-                />
-              </div>
-            </div>
-          )}
-
+          {/* Root mode: only root code */}
           {isRootMode && (
             <div className={`form-group root-code-group ${focused === 'rootCode' ? 'focused' : ''} ${rootCode ? 'has-value' : ''}`}>
               <label htmlFor="rootCode">개발자 코드</label>
@@ -193,6 +145,98 @@ export default function LoginPage() {
             </div>
           )}
 
+          {/* Admin mode: name + admin code */}
+          {isAdminMode && !isRootMode && (
+            <>
+              <div className={`form-group ${focused === 'name' ? 'focused' : ''} ${name ? 'has-value' : ''}`}>
+                <label htmlFor="name">이름</label>
+                <div className="input-wrapper">
+                  <User size={18} className="input-icon" />
+                  <input
+                    id="name"
+                    type="text"
+                    className="input-field"
+                    placeholder="이름을 입력하세요"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    onFocus={() => setFocused('name')}
+                    onBlur={() => setFocused('')}
+                  />
+                </div>
+              </div>
+              <div className={`form-group admin-code-group ${focused === 'adminCode' ? 'focused' : ''} ${adminCode ? 'has-value' : ''}`}>
+                <label htmlFor="adminCode">관리자 코드</label>
+                <div className="input-wrapper">
+                  <Lock size={18} className="input-icon" />
+                  <input
+                    id="adminCode"
+                    type="password"
+                    className="input-field"
+                    placeholder="관리자 코드를 입력하세요"
+                    value={adminCode}
+                    onChange={(e) => setAdminCode(e.target.value)}
+                    onFocus={() => setFocused('adminCode')}
+                    onBlur={() => setFocused('')}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Student mode: studentId + name + phone */}
+          {!isRootMode && !isAdminMode && (
+            <>
+              <div className={`form-group ${focused === 'studentId' ? 'focused' : ''} ${studentId ? 'has-value' : ''}`}>
+                <label htmlFor="studentId">학번</label>
+                <div className="input-wrapper">
+                  <Hash size={18} className="input-icon" />
+                  <input
+                    id="studentId"
+                    type="text"
+                    className="input-field"
+                    placeholder="학번을 입력하세요"
+                    value={studentId}
+                    onChange={(e) => setStudentId(e.target.value)}
+                    onFocus={() => setFocused('studentId')}
+                    onBlur={() => setFocused('')}
+                  />
+                </div>
+              </div>
+              <div className={`form-group ${focused === 'name' ? 'focused' : ''} ${name ? 'has-value' : ''}`}>
+                <label htmlFor="name">이름</label>
+                <div className="input-wrapper">
+                  <User size={18} className="input-icon" />
+                  <input
+                    id="name"
+                    type="text"
+                    className="input-field"
+                    placeholder="이름을 입력하세요"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    onFocus={() => setFocused('name')}
+                    onBlur={() => setFocused('')}
+                  />
+                </div>
+              </div>
+              <div className={`form-group ${focused === 'phone' ? 'focused' : ''} ${phone ? 'has-value' : ''}`}>
+                <label htmlFor="phone">전화번호</label>
+                <div className="input-wrapper">
+                  <Phone size={18} className="input-icon" />
+                  <input
+                    id="phone"
+                    type="tel"
+                    className="input-field"
+                    placeholder="010-0000-0000"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    onFocus={() => setFocused('phone')}
+                    onBlur={() => setFocused('')}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
           {error && <p className="error-message">{error}</p>}
 
           <button type="submit" className="btn-primary submit-btn" disabled={loading}>
@@ -208,7 +252,13 @@ export default function LoginPage() {
           <button
             type="button"
             className="admin-toggle"
-            onClick={() => { setIsAdminMode(!isAdminMode); setAdminCode(''); setError(''); }}
+            onClick={() => {
+              setIsAdminMode(!isAdminMode);
+              setAdminCode('');
+              setStudentId('');
+              setPhone('');
+              setError('');
+            }}
           >
             <Shield size={14} />
             <span>{isAdminMode ? '학생 로그인으로 전환' : '관리자 로그인'}</span>

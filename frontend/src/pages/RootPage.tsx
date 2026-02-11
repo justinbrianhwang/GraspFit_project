@@ -6,7 +6,7 @@ import type { RootUser } from '../types';
 import Modal from '../components/common/Modal';
 import {
   LogOut, Users, Shield, UserCheck, Trash2,
-  ChevronRight, BookOpen, BarChart3, AlertTriangle,
+  ChevronRight, BookOpen, BarChart3, AlertTriangle, Sliders,
 } from 'lucide-react';
 import './RootPage.css';
 
@@ -18,6 +18,11 @@ export default function RootPage() {
   const [deleteTarget, setDeleteTarget] = useState<RootUser | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
+  // Threshold state
+  const [currentThreshold, setCurrentThreshold] = useState<number | null>(null);
+  const [sliderValue, setSliderValue] = useState<number>(0.00729);
+  const [thresholdSaving, setThresholdSaving] = useState(false);
+
   useEffect(() => {
     if (user?.id) {
       api.getRootUsers(user.id)
@@ -25,7 +30,26 @@ export default function RootPage() {
         .catch(console.error)
         .finally(() => setLoading(false));
     }
+    api.getThreshold()
+      .then((data) => {
+        setCurrentThreshold(data.threshold);
+        setSliderValue(data.threshold);
+      })
+      .catch(console.error);
   }, [user?.id]);
+
+  const handleSaveThreshold = async () => {
+    if (!user?.id) return;
+    setThresholdSaving(true);
+    try {
+      const data = await api.updateThreshold(sliderValue, user.id);
+      setCurrentThreshold(data.threshold);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setThresholdSaving(false);
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -127,6 +151,39 @@ export default function RootPage() {
             <span>시스템 원리 설명</span>
             <ChevronRight size={16} />
           </button>
+        </div>
+
+        {/* Threshold slider */}
+        <div className="root-threshold-section">
+          <h2 className="root-section-title">
+            <Sliders size={16} /> MSE 임계값 조정
+          </h2>
+          <div className="root-threshold-card">
+            <div className="root-threshold-labels">
+              <span className="root-threshold-strict">더 엄격</span>
+              <span className="root-threshold-lenient">더 관대</span>
+            </div>
+            <input
+              type="range"
+              className="root-threshold-slider"
+              min={0.001}
+              max={0.05}
+              step={0.0001}
+              value={sliderValue}
+              onChange={(e) => setSliderValue(parseFloat(e.target.value))}
+            />
+            <div className="root-threshold-values">
+              <span>현재: {currentThreshold?.toFixed(6) ?? '...'}</span>
+              <span>설정: {sliderValue.toFixed(6)}</span>
+            </div>
+            <button
+              className="root-threshold-save-btn"
+              onClick={handleSaveThreshold}
+              disabled={thresholdSaving || sliderValue === currentThreshold}
+            >
+              {thresholdSaving ? '저장 중...' : '임계값 저장'}
+            </button>
+          </div>
         </div>
 
         {/* User table */}
