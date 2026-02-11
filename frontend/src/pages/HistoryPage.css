@@ -1,0 +1,300 @@
+.history-page {
+  min-height: 100vh;
+  background: var(--color-bg-light);
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.history-header h1 {
+  color: var(--color-text-primary);
+  font-size: 18px;
+  font-weight: 600;
+  flex: 1;
+  text-align: center;
+}
+.header-spacer {
+  width: 36px;
+}
+.hist-back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-normal);
+}
+.hist-back-btn:hover {
+  background: var(--color-bg-light);
+}
+
+.history-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.history-loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+/* Stats summary */
+.hist-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+  animation: fadeInUp 0.5s ease;
+}
+.hist-stat-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 16px 8px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.hist-stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 8px;
+}
+.hist-stat-icon-sessions {
+  background: rgba(76, 175, 80, 0.1);
+  color: var(--color-correct);
+}
+.hist-stat-icon-time {
+  background: rgba(255, 183, 77, 0.12);
+  color: #F57C00;
+}
+.hist-stat-icon-rate {
+  background: rgba(100, 181, 246, 0.12);
+  color: #1976D2;
+}
+.hist-stat-icon-weekly {
+  background: rgba(77, 182, 172, 0.12);
+  color: var(--color-primary-dark);
+}
+.hist-stat-value {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}
+.hist-stat-label {
+  display: block;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+/* Section title */
+.hist-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 12px;
+}
+
+/* Records list */
+.records-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 28px;
+  animation: fadeInUp 0.5s ease 0.1s both;
+}
+.record-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-normal);
+}
+.record-card:hover {
+  box-shadow: var(--shadow-sm);
+}
+.record-good {
+  border-left: 3px solid var(--color-correct);
+}
+.record-poor {
+  border-left: 3px solid var(--color-incorrect);
+}
+.record-card-date {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  min-width: 90px;
+}
+.record-card-stats {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+}
+.record-card-time,
+.record-card-rate {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+.record-card-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+.badge-good {
+  background: rgba(76, 175, 80, 0.1);
+  color: var(--color-correct);
+}
+.badge-poor {
+  background: rgba(244, 67, 54, 0.08);
+  color: var(--color-incorrect);
+}
+
+/* Feedback list */
+.hist-feedback-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fadeInUp 0.5s ease 0.2s both;
+}
+.hist-feedback-item {
+  background: #fff;
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  border-left: 3px solid var(--color-primary);
+  box-shadow: var(--shadow-xs);
+}
+.hist-feedback-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.hist-feedback-week {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  background: var(--color-primary-50);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.hist-feedback-author {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+.hist-feedback-date {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-left: auto;
+}
+.hist-feedback-text {
+  font-size: 14px;
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px 40px;
+  animation: fadeIn 0.5s ease;
+}
+.empty-icon-wrap {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 24px;
+}
+.empty-icon-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-round);
+  background: var(--color-primary-50);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: float 4s ease-in-out infinite;
+}
+.empty-icon-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: var(--radius-round);
+  border: 2px dashed var(--color-primary-100);
+  animation: spin 20s linear infinite;
+}
+.empty-state h2 {
+  color: var(--color-text-primary);
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.empty-state p {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+.empty-actions {
+  margin-bottom: 32px;
+}
+.empty-actions .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+}
+.empty-tips {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.empty-tip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  padding: 8px 16px;
+  background: #fff;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+}
+
+@media (max-width: 480px) {
+  .hist-stats { grid-template-columns: repeat(2, 1fr); }
+  .hist-stat-value { font-size: 16px; }
+  .record-card-date { min-width: 70px; font-size: 12px; }
+}

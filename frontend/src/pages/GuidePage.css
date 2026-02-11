@@ -1,0 +1,200 @@
+.guide-page {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px 20px;
+  animation: fadeIn 0.5s ease;
+}
+.guide-container {
+  background: #fff;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  max-width: 640px;
+  width: 100%;
+  padding: 40px;
+  animation: slideUp 0.5s ease;
+}
+
+/* Header */
+.guide-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.guide-header-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-round);
+  background: var(--color-primary-50);
+  color: var(--color-primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+.guide-header h1 {
+  color: var(--color-primary-dark);
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.guide-header p {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+/* Steps */
+.guide-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+.step-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  background: #fff;
+  border-radius: var(--radius-lg);
+  position: relative;
+  border: 1px solid var(--color-border-light);
+  transition: all var(--transition-normal);
+  animation: slideInRight 0.5s ease both;
+  box-shadow: var(--shadow-xs);
+}
+.step-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+  transform: translateX(4px);
+}
+.step-number {
+  position: absolute;
+  top: -8px;
+  left: 16px;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-round);
+  background: var(--gradient-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(77, 182, 172, 0.3);
+}
+.step-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.step-content h3 {
+  color: var(--color-text-primary);
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.step-content p {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Camera angle guide */
+.camera-angle-guide {
+  background: linear-gradient(135deg, #FFF8E1, #FFF3E0);
+  border: 1px solid rgba(255, 152, 0, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 28px;
+  animation: fadeInUp 0.5s ease 0.4s both;
+}
+.camera-angle-guide h3 {
+  color: #E65100;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.angle-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.tip-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-normal);
+}
+.tip-good { background: rgba(76, 175, 80, 0.06); }
+.tip-bad { background: rgba(244, 67, 54, 0.04); }
+.tip-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-round);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.tip-check { background: var(--color-correct); }
+.tip-cross { background: var(--color-incorrect); }
+
+/* Reference image */
+.guide-reference {
+  text-align: center;
+  margin-bottom: 32px;
+  animation: fadeInUp 0.5s ease 0.5s both;
+}
+.guide-reference h3 {
+  color: var(--color-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.reference-img-wrap {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border-light);
+}
+.reference-img {
+  width: 100%;
+  display: block;
+}
+
+/* Footer */
+.guide-footer {
+  text-align: center;
+  animation: fadeInUp 0.5s ease 0.6s both;
+}
+.start-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 15px 44px;
+  font-size: 16px;
+}
+
+@media (max-width: 640px) {
+  .guide-container { padding: 28px 20px; border-radius: var(--radius-lg); }
+  .guide-header h1 { font-size: 22px; }
+  .step-card { padding: 16px; gap: 12px; }
+  .step-icon { width: 42px; height: 42px; }
+}

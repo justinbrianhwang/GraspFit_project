@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: graspfit
+    runtime: python
+    buildCommand: |
+      cd frontend && npm install && npm run build &&
+      cp -r dist ../backend/static &&
+      cd ../backend && pip install -r requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: PYTHON_VERSION
+        value: "3.11.6"
+      - key: NODE_VERSION
+        value: "20"
