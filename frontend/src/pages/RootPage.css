@@ -234,12 +234,117 @@
   cursor: not-allowed;
 }
 
+/* Section header with register button */
+.root-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.root-section-header .root-section-title {
+  margin-bottom: 0;
+}
+.root-register-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 14px;
+  background: var(--gradient-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-family);
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-primary);
+}
+.root-register-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-primary-lg);
+}
+
 /* Section title */
 .root-section-title {
   font-size: 16px;
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 14px;
+}
+
+/* Registration form modal */
+.register-form {
+  padding: 4px 0;
+}
+.register-form h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+.register-desc {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin-bottom: 20px;
+}
+.register-field {
+  margin-bottom: 14px;
+}
+.register-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+}
+.register-field input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-family: var(--font-family);
+  outline: none;
+  transition: border-color var(--transition-normal);
+  background: var(--color-bg-light);
+  box-sizing: border-box;
+}
+.register-field input:focus {
+  border-color: var(--color-primary);
+  background: #fff;
+}
+.register-error {
+  color: var(--color-incorrect);
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+.register-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+.register-submit-btn {
+  padding: 12px 28px;
+  background: var(--gradient-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-family);
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-primary);
+}
+.register-submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-primary-lg);
+}
+.register-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .root-loading {

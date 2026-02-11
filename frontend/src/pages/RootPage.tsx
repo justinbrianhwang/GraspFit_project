@@ -6,7 +6,7 @@ import type { RootUser } from '../types';
 import Modal from '../components/common/Modal';
 import {
   LogOut, Users, Shield, UserCheck, Trash2,
-  ChevronRight, BookOpen, BarChart3, AlertTriangle, Sliders,
+  ChevronRight, BookOpen, BarChart3, AlertTriangle, Sliders, UserPlus,
 } from 'lucide-react';
 import './RootPage.css';
 
@@ -17,6 +17,14 @@ export default function RootPage() {
   const [loading, setLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<RootUser | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+
+  // Student registration modal
+  const [showRegister, setShowRegister] = useState(false);
+  const [regStudentId, setRegStudentId] = useState('');
+  const [regName, setRegName] = useState('');
+  const [regPhone, setRegPhone] = useState('');
+  const [regError, setRegError] = useState('');
+  const [regLoading, setRegLoading] = useState(false);
 
   // Threshold state
   const [currentThreshold, setCurrentThreshold] = useState<number | null>(null);
@@ -83,6 +91,45 @@ export default function RootPage() {
       console.error(err);
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const handleRegisterStudent = async () => {
+    if (!user?.id) return;
+    if (!regStudentId.trim() || !regName.trim() || !regPhone.trim()) {
+      setRegError('모든 항목을 입력해주세요.');
+      return;
+    }
+    setRegLoading(true);
+    setRegError('');
+    try {
+      const newUser = await api.registerStudent(
+        { studentId: regStudentId.trim(), name: regName.trim(), phone: regPhone.trim() },
+        user.id,
+      );
+      // Add to list if not already present
+      const newId = newUser.id!;
+      if (!users.find((u) => u.userId === newId)) {
+        setUsers([...users, {
+          userId: newId,
+          studentId: newUser.studentId,
+          name: newUser.name,
+          phone: newUser.phone,
+          role: (newUser.role ?? 'student') as RootUser['role'],
+          totalSessions: 0,
+          totalMinutes: 0,
+          correctRate: 0,
+          createdAt: new Date().toISOString(),
+        }]);
+      }
+      setShowRegister(false);
+      setRegStudentId('');
+      setRegName('');
+      setRegPhone('');
+    } catch (err) {
+      setRegError(err instanceof Error ? err.message : '등록에 실패했습니다.');
+    } finally {
+      setRegLoading(false);
     }
   };
 
@@ -187,7 +234,13 @@ export default function RootPage() {
         </div>
 
         {/* User table */}
-        <h2 className="root-section-title">사용자 관리</h2>
+        <div className="root-section-header">
+          <h2 className="root-section-title">사용자 관리</h2>
+          <button className="root-register-btn" onClick={() => { setShowRegister(true); setRegError(''); }}>
+            <UserPlus size={14} />
+            <span>학생 등록</span>
+          </button>
+        </div>
 
         {loading ? (
           <div className="root-loading">데이터를 불러오는 중...</div>
@@ -233,6 +286,54 @@ export default function RootPage() {
           </div>
         )}
       </div>
+
+      {/* Student registration modal */}
+      <Modal isOpen={showRegister} onClose={() => setShowRegister(false)}>
+        <div className="register-form">
+          <h2>학생 등록</h2>
+          <p className="register-desc">새 학생을 사전 등록합니다.</p>
+          <div className="register-field">
+            <label>학번</label>
+            <input
+              type="text"
+              placeholder="학번을 입력하세요"
+              value={regStudentId}
+              onChange={(e) => setRegStudentId(e.target.value)}
+            />
+          </div>
+          <div className="register-field">
+            <label>이름</label>
+            <input
+              type="text"
+              placeholder="이름을 입력하세요"
+              value={regName}
+              onChange={(e) => setRegName(e.target.value)}
+            />
+          </div>
+          <div className="register-field">
+            <label>전화번호</label>
+            <input
+              type="tel"
+              placeholder="010-0000-0000"
+              value={regPhone}
+              onChange={(e) => setRegPhone(e.target.value)}
+            />
+          </div>
+          {regError && <p className="register-error">{regError}</p>}
+          <div className="register-actions">
+            <button className="delete-cancel-btn" onClick={() => setShowRegister(false)}>
+              취소
+            </button>
+            <button
+              className="register-submit-btn"
+              onClick={handleRegisterStudent}
+              disabled={regLoading}
+            >
+              {regLoading ? '등록 중...' : '등록'}
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Delete confirmation modal */}
       <Modal isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)}>
