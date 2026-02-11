@@ -73,15 +73,12 @@ def create_user(data: UserCreate, db: Session = Depends(get_db)):
 
     # Auto-generate fields based on role
     if role == "root":
-        existing_count = db.query(User).filter(User.student_id.like("root_%")).count()
-        student_id = f"root_{existing_count + 1}"
-        name = data.name.strip() if data.name and data.name.strip() else "Root Admin"
+        student_id = "root_shared"
+        name = "Root Admin"
         phone = "N/A"
     elif role == "admin":
-        if not data.name or not data.name.strip():
-            raise HTTPException(status_code=400, detail="이름을 입력해주세요.")
-        name = data.name.strip()
-        student_id = f"admin_{name}"
+        student_id = "admin_shared"
+        name = "관리자"
         phone = "N/A"
     else:
         # Student: 사전 등록된 학생만 로그인 가능
