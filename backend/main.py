@@ -84,6 +84,7 @@ def create_user(data: UserCreate, db: Session = Depends(get_db)):
         student_id = f"admin_{name}"
         phone = "N/A"
     else:
+        # Student: 사전 등록된 학생만 로그인 가능
         if not data.studentId or not data.studentId.strip():
             raise HTTPException(status_code=400, detail="학번을 입력해주세요.")
         if not data.name or not data.name.strip():
@@ -94,11 +95,18 @@ def create_user(data: UserCreate, db: Session = Depends(get_db)):
         name = data.name.strip()
         phone = data.phone.strip()
 
+        existing = db.query(User).filter(User.student_id == student_id).first()
+        if not existing:
+            raise HTTPException(status_code=403, detail="등록되지 않은 학생입니다. 관리자에게 문의하세요.")
+        if existing.name != name or existing.phone != phone:
+            raise HTTPException(status_code=403, detail="입력 정보가 일치하지 않습니다.")
+        return UserResponse.from_orm_model(existing)
+
+    # Root / Admin: auto-generate and upsert
     role_priority = {"student": 0, "admin": 1, "root": 2}
 
     existing = db.query(User).filter(User.student_id == student_id).first()
     if existing:
-        # Upgrade role if higher priority
         if role_priority.get(role, 0) > role_priority.get(existing.role, 0):
             existing.role = role
             db.commit()
@@ -374,6 +382,37 @@ def root_delete_user(
     db.delete(user)
     db.commit()
     return {"message": "User deleted", "userId": user_id}
+
+
+@app.post("/api/root/students", response_model=UserResponse)
+def register_student(
+    data: UserCreate,
+    root_id: int = Query(...),
+    db: Session = Depends(get_db),
+):
+    require_root(root_id, db)
+    if not data.studentId or not data.studentId.strip():
+        raise HTTPException(status_code=400, detail="학번을 입력해주세요.")
+    if not data.name or not data.name.strip():
+        raise HTTPException(status_code=400, detail="이름을 입력해주세요.")
+    if not data.phone or not data.phone.strip():
+        raise HTTPException(status_code=400, detail="전화번호를 입력해주세요.")
+
+    student_id = data.studentId.strip()
+    existing = db.query(User).filter(User.student_id == student_id).first()
+    if existing:
+        return UserResponse.from_orm_model(existing)
+
+    user = User(
+        student_id=student_id,
+        name=data.name.strip(),
+        phone=data.phone.strip(),
+        role="student",
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return UserResponse.from_orm_model(user)
 
 
 # ── Settings ──────────────────────────────────────────────
