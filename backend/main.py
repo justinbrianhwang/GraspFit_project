@@ -457,13 +457,26 @@ def update_threshold(
 # ── Serve frontend (production) ──────────────────────────
 
 _base = os.path.dirname(os.path.abspath(__file__))
+_static_dir = None
 for _candidate in [
     os.path.join(_base, "..", "frontend", "dist"),
     os.path.join(_base, "static"),
 ]:
     if os.path.isdir(_candidate):
-        app.mount("/", StaticFiles(directory=_candidate, html=True), name="frontend")
+        _static_dir = _candidate
         break
+
+if _static_dir:
+    from fastapi.responses import FileResponse
+
+    app.mount("/assets", StaticFiles(directory=os.path.join(_static_dir, "assets")), name="assets")
+
+    @app.get("/{full_path:path}")
+    def serve_spa(full_path: str):
+        file_path = os.path.join(_static_dir, full_path)
+        if full_path and os.path.isfile(file_path):
+            return FileResponse(file_path)
+        return FileResponse(os.path.join(_static_dir, "index.html"))
 
 
 if __name__ == "__main__":
