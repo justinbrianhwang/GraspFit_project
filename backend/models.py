@@ -45,3 +45,13 @@ class Feedback(Base):
 
     admin = relationship("User", foreign_keys=[admin_id])
     student = relationship("User", foreign_keys=[student_id])
+
+
+class AppSetting(Base):
+    __tablename__ = "app_settings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    key = Column(String(100), unique=True, nullable=False, index=True)
+    value = Column(String(500), nullable=False)
+    updated_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))

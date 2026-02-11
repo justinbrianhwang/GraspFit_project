@@ -5,9 +5,9 @@ from typing import Optional
 
 # ── User
 class UserCreate(BaseModel):
-    studentId: str
-    name: str
-    phone: str
+    studentId: Optional[str] = None
+    name: Optional[str] = None
+    phone: Optional[str] = None
     adminCode: Optional[str] = None
     rootCode: Optional[str] = None
 

@@ -12,7 +12,7 @@ from collections import defaultdict
 import os
 
 from database import engine, get_db, Base
-from models import User, PracticeRecord, Feedback
+from models import User, PracticeRecord, Feedback, AppSetting
 from schemas import (
     UserCreate, UserResponse,
     RecordCreate, RecordResponse,
@@ -53,6 +53,9 @@ def require_root(root_id: int, db: Session) -> User:
 
 # ── Users ──────────────────────────────────────────────────
 
+DEFAULT_THRESHOLD = 0.007291107764467597  # From model_meta.json threshold_train95
+
+
 @app.post("/api/users", response_model=UserResponse)
 def create_user(data: UserCreate, db: Session = Depends(get_db)):
     # Determine role by priority: root > admin > student
@@ -68,9 +71,32 @@ def create_user(data: UserCreate, db: Session = Depends(get_db)):
         else:
             raise HTTPException(status_code=403, detail="잘못된 관리자 코드입니다")
 
+    # Auto-generate fields based on role
+    if role == "root":
+        existing_count = db.query(User).filter(User.student_id.like("root_%")).count()
+        student_id = f"root_{existing_count + 1}"
+        name = data.name.strip() if data.name and data.name.strip() else "Root Admin"
+        phone = "N/A"
+    elif role == "admin":
+        if not data.name or not data.name.strip():
+            raise HTTPException(status_code=400, detail="이름을 입력해주세요.")
+        name = data.name.strip()
+        student_id = f"admin_{name}"
+        phone = "N/A"
+    else:
+        if not data.studentId or not data.studentId.strip():
+            raise HTTPException(status_code=400, detail="학번을 입력해주세요.")
+        if not data.name or not data.name.strip():
+            raise HTTPException(status_code=400, detail="이름을 입력해주세요.")
+        if not data.phone or not data.phone.strip():
+            raise HTTPException(status_code=400, detail="전화번호를 입력해주세요.")
+        student_id = data.studentId.strip()
+        name = data.name.strip()
+        phone = data.phone.strip()
+
     role_priority = {"student": 0, "admin": 1, "root": 2}
 
-    existing = db.query(User).filter(User.student_id == data.studentId).first()
+    existing = db.query(User).filter(User.student_id == student_id).first()
     if existing:
         # Upgrade role if higher priority
         if role_priority.get(role, 0) > role_priority.get(existing.role, 0):
@@ -80,9 +106,9 @@ def create_user(data: UserCreate, db: Session = Depends(get_db)):
         return UserResponse.from_orm_model(existing)
 
     user = User(
-        student_id=data.studentId,
-        name=data.name,
-        phone=data.phone,
+        student_id=student_id,
+        name=name,
+        phone=phone,
         role=role,
     )
     db.add(user)
@@ -348,6 +374,48 @@ def root_delete_user(
     db.delete(user)
     db.commit()
     return {"message": "User deleted", "userId": user_id}
+
+
+# ── Settings ──────────────────────────────────────────────
+
+@app.get("/api/settings/threshold")
+def get_threshold(db: Session = Depends(get_db)):
+    setting = db.query(AppSetting).filter(AppSetting.key == "mse_threshold").first()
+    if setting:
+        return {
+            "threshold": float(setting.value),
+            "updatedAt": setting.updated_at.isoformat() if setting.updated_at else None,
+            "updatedBy": setting.updated_by,
+        }
+    return {"threshold": DEFAULT_THRESHOLD, "updatedAt": None, "updatedBy": None}
+
+
+@app.put("/api/settings/threshold")
+def update_threshold(
+    value: float = Query(..., ge=0.001, le=0.05),
+    admin_id: int = Query(...),
+    db: Session = Depends(get_db),
+):
+    require_admin(admin_id, db)
+    setting = db.query(AppSetting).filter(AppSetting.key == "mse_threshold").first()
+    if setting:
+        setting.value = str(value)
+        setting.updated_by = admin_id
+        setting.updated_at = datetime.now(timezone.utc)
+    else:
+        setting = AppSetting(
+            key="mse_threshold",
+            value=str(value),
+            updated_by=admin_id,
+        )
+        db.add(setting)
+    db.commit()
+    db.refresh(setting)
+    return {
+        "threshold": float(setting.value),
+        "updatedAt": setting.updated_at.isoformat() if setting.updated_at else None,
+        "updatedBy": setting.updated_by,
+    }
 
 
 # ── Serve frontend (production) ──────────────────────────
