@@ -56,6 +56,12 @@ export const api = {
   deleteUser: (userId: number, rootId: number) =>
     request<{ message: string }>(`/api/root/users/${userId}?root_id=${rootId}`, { method: 'DELETE' }),
 
+  registerStudent: (data: { studentId: string; name: string; phone: string }, rootId: number) =>
+    request<UserProfile>(`/api/root/students?root_id=${rootId}`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
   // ── Settings ──
   getThreshold: () =>
     request<{ threshold: number; updatedAt: string | null; updatedBy: number | null }>(
