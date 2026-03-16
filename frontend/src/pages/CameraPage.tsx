@@ -173,9 +173,9 @@ export default function CameraPage() {
           </div>
         )}
 
-        {camera.error && (
+        {(camera.error || grip.mpError || grip.modelError) && (
           <div className="error-overlay">
-            <p>{camera.error}</p>
+            <p>{camera.error || grip.mpError || grip.modelError}</p>
           </div>
         )}
 

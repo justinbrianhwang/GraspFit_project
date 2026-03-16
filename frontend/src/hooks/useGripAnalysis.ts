@@ -39,7 +39,7 @@ export function useGripAnalysis() {
         lastFrameTimeRef.current = now;
 
         const timestamp = performance.now();
-        const landmarks = mediaPipe.detectHand(videoRef.current, timestamp);
+        const landmarks = mediaPipe.detectHand(videoRef.current);
 
         if (landmarks) {
           setHandDetected(true);
