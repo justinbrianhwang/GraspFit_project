@@ -14,17 +14,33 @@ export function useMediaPipe() {
     setIsLoading(true);
     try {
       const vision = await FilesetResolver.forVisionTasks(MEDIAPIPE_WASM_CDN);
-      const handLandmarker = await HandLandmarker.createFromOptions(vision, {
-        baseOptions: {
-          modelAssetPath: MEDIAPIPE_MODEL_URL,
-          delegate: 'GPU',
-        },
-        runningMode: 'VIDEO',
-        numHands: 1,
-        minHandDetectionConfidence: MIN_HAND_CONFIDENCE,
-        minHandPresenceConfidence: MIN_HAND_CONFIDENCE,
-        minTrackingConfidence: MIN_HAND_CONFIDENCE,
-      });
+      let handLandmarker: HandLandmarker;
+      try {
+        handLandmarker = await HandLandmarker.createFromOptions(vision, {
+          baseOptions: {
+            modelAssetPath: MEDIAPIPE_MODEL_URL,
+            delegate: 'GPU',
+          },
+          runningMode: 'VIDEO',
+          numHands: 1,
+          minHandDetectionConfidence: MIN_HAND_CONFIDENCE,
+          minHandPresenceConfidence: MIN_HAND_CONFIDENCE,
+          minTrackingConfidence: MIN_HAND_CONFIDENCE,
+        });
+      } catch {
+        console.warn('GPU delegate unavailable, falling back to CPU');
+        handLandmarker = await HandLandmarker.createFromOptions(vision, {
+          baseOptions: {
+            modelAssetPath: MEDIAPIPE_MODEL_URL,
+            delegate: 'CPU',
+          },
+          runningMode: 'VIDEO',
+          numHands: 1,
+          minHandDetectionConfidence: MIN_HAND_CONFIDENCE,
+          minHandPresenceConfidence: MIN_HAND_CONFIDENCE,
+          minTrackingConfidence: MIN_HAND_CONFIDENCE,
+        });
+      }
       handLandmarkerRef.current = handLandmarker;
       setIsReady(true);
     } catch (err) {
