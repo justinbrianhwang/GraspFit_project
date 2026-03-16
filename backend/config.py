@@ -8,7 +8,7 @@ if DATABASE_URL.startswith("postgres://"):
 
 CORS_ORIGINS = os.getenv(
     "CORS_ORIGINS",
-    "http://localhost:5173,http://localhost:3000",
+    "http://localhost:5173,http://localhost:3000,https://graspfit-project.onrender.com",
 ).split(",")
 
 ADMIN_CODE = os.getenv("ADMIN_CODE", "graspfit2026")

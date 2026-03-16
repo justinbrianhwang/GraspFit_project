@@ -459,8 +459,8 @@ def update_threshold(
 _base = os.path.dirname(os.path.abspath(__file__))
 _static_dir = None
 for _candidate in [
-    os.path.join(_base, "..", "frontend", "dist"),
     os.path.join(_base, "static"),
+    os.path.join(_base, "..", "frontend", "dist"),
 ]:
     if os.path.isdir(_candidate):
         _static_dir = _candidate
@@ -469,7 +469,11 @@ for _candidate in [
 if _static_dir:
     from fastapi.responses import FileResponse
 
-    app.mount("/assets", StaticFiles(directory=os.path.join(_static_dir, "assets")), name="assets")
+    # Mount known static subdirectories so they are served directly
+    for _subdir in ["assets", "models", "images"]:
+        _subpath = os.path.join(_static_dir, _subdir)
+        if os.path.isdir(_subpath):
+            app.mount(f"/{_subdir}", StaticFiles(directory=_subpath), name=_subdir)
 
     @app.get("/{full_path:path}")
     def serve_spa(full_path: str):
