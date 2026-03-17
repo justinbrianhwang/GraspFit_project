@@ -24,6 +24,7 @@ export default function CameraPage() {
   const [showResult, setShowResult] = useState(false);
   const [videoDimensions, setVideoDimensions] = useState({ w: 640, h: 480 });
   const [modelsLoading, setModelsLoading] = useState(true);
+  const [showDebug, setShowDebug] = useState(false);
 
   // Warning beep state
   const wasCorrectRef = useRef<boolean | null>(null);
@@ -144,7 +145,7 @@ export default function CameraPage() {
         <button className="cam-nav-btn" onClick={handleBack}>
           <ArrowLeft size={22} />
         </button>
-        <h1>그립 분석</h1>
+        <h1 onClick={() => setShowDebug(d => !d)} style={{ cursor: 'pointer' }}>그립 분석</h1>
         {camera.isActive && (
           <button className="cam-nav-btn" onClick={camera.switchCamera}>
             <SwitchCamera size={20} />
@@ -249,6 +250,28 @@ export default function CameraPage() {
           {isPracticing ? '종료하려면 탭하세요' : modelsLoading ? '모델 로딩 중...' : '시작하려면 탭하세요'}
         </span>
       </div>
+
+      {/* Debug panel - triple tap header to toggle */}
+      {showDebug && (
+        <div style={{
+          position: 'fixed', bottom: 0, left: 0, right: 0,
+          background: 'rgba(0,0,0,0.9)', color: '#0f0',
+          fontSize: 11, padding: 8, zIndex: 9999,
+          maxHeight: '40vh', overflow: 'auto', fontFamily: 'monospace',
+        }}>
+          <div><b>== DEBUG PANEL ==</b></div>
+          <div>MP ready: {String(grip.mpReady)} | Model: {String(grip.modelReady)}</div>
+          <div>Analyzing: {String(grip.isAnalyzing)} | Hand: {String(grip.handDetected)}</div>
+          <div>Detect calls: {grip.detectCountRef.current}</div>
+          <div>Last result: {grip.lastDetectResult.current}</div>
+          <div>Detect error: {grip.detectError.current || 'none'}</div>
+          <div>Video: {videoElRef.current ? `${videoElRef.current.videoWidth}x${videoElRef.current.videoHeight} rs=${videoElRef.current.readyState}` : 'null'}</div>
+          <div style={{ marginTop: 4 }}><b>Init Log:</b></div>
+          {grip.debugLog.map((line, i) => (
+            <div key={i}>{line}</div>
+          ))}
+        </div>
+      )}
 
       <Modal isOpen={showResult} onClose={() => setShowResult(false)}>
         <div className="result-content">

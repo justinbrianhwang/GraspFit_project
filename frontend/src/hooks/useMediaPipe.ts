@@ -14,17 +14,35 @@ export function useMediaPipe() {
   const [isReady, setIsReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [debugLog, setDebugLog] = useState<string[]>([]);
+  const detectCountRef = useRef(0);
+  const detectErrorRef = useRef<string | null>(null);
+  const lastResultRef = useRef<string>('none');
+
+  const addLog = (msg: string) => {
+    console.log(`[MediaPipe] ${msg}`);
+    setDebugLog(prev => [...prev.slice(-15), `${new Date().toLocaleTimeString()} ${msg}`]);
+  };
 
   const initialize = useCallback(async () => {
     if (handLandmarkerRef.current || isLoading) return;
     setIsLoading(true);
     setError(null);
     try {
-      console.log('[MediaPipe] Loading WASM from:', MEDIAPIPE_WASM_CDN);
+      addLog(`WASM CDN: ${MEDIAPIPE_WASM_CDN}`);
       const vision = await FilesetResolver.forVisionTasks(MEDIAPIPE_WASM_CDN);
-      console.log('[MediaPipe] WASM loaded OK');
+      addLog('WASM loaded OK');
 
-      console.log('[MediaPipe] Loading model from:', MEDIAPIPE_MODEL_URL);
+      addLog(`Model URL: ${MEDIAPIPE_MODEL_URL}`);
+
+      // Verify model file is accessible
+      try {
+        const modelCheck = await fetch(MEDIAPIPE_MODEL_URL, { method: 'HEAD' });
+        addLog(`Model HEAD: ${modelCheck.status} ${modelCheck.headers.get('content-type')} size=${modelCheck.headers.get('content-length')}`);
+      } catch (e) {
+        addLog(`Model HEAD failed: ${e}`);
+      }
+
       const handLandmarker = await HandLandmarker.createFromOptions(vision, {
         baseOptions: {
           modelAssetPath: MEDIAPIPE_MODEL_URL,
@@ -37,12 +55,12 @@ export function useMediaPipe() {
         minTrackingConfidence: MIN_TRACKING_CONFIDENCE,
       });
 
-      console.log('[MediaPipe] HandLandmarker created OK (IMAGE mode, CPU)');
+      addLog('HandLandmarker created (IMAGE, CPU)');
       handLandmarkerRef.current = handLandmarker;
       setIsReady(true);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      console.error('[MediaPipe] Init FAILED:', err);
+      addLog(`INIT FAILED: ${msg}`);
       setError(`손 인식 모델 로드 실패: ${msg}`);
     } finally {
       setIsLoading(false);
@@ -51,15 +69,29 @@ export function useMediaPipe() {
 
   const detectHand = useCallback(
     (videoFrame: HTMLVideoElement): HandLandmark[] | null => {
-      if (!handLandmarkerRef.current) return null;
-      if (videoFrame.readyState < 2) return null;
+      detectCountRef.current++;
+
+      if (!handLandmarkerRef.current) {
+        lastResultRef.current = 'no-landmarker';
+        return null;
+      }
+      if (videoFrame.readyState < 2) {
+        lastResultRef.current = `readyState=${videoFrame.readyState}`;
+        return null;
+      }
+
       try {
         const result = handLandmarkerRef.current.detect(videoFrame);
         if (result.landmarks && result.landmarks.length > 0) {
+          lastResultRef.current = `OK: ${result.landmarks[0].length} pts`;
+          detectErrorRef.current = null;
           return result.landmarks[0] as HandLandmark[];
         }
+        lastResultRef.current = `empty: landmarks=${result.landmarks?.length ?? 'null'}`;
       } catch (err) {
-        console.error('[MediaPipe] detect error:', err);
+        const msg = err instanceof Error ? err.message : String(err);
+        lastResultRef.current = `ERROR: ${msg}`;
+        detectErrorRef.current = msg;
       }
       return null;
     },
@@ -72,5 +104,8 @@ export function useMediaPipe() {
     setIsReady(false);
   }, []);
 
-  return { initialize, isReady, isLoading, error, detectHand, destroy };
+  return {
+    initialize, isReady, isLoading, error, detectHand, destroy,
+    debugLog, detectCountRef, lastResultRef, detectErrorRef,
+  };
 }

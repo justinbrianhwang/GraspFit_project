@@ -104,5 +104,10 @@ export function useGripAnalysis() {
     handDetected,
     startAnalysis,
     stopAnalysis,
+    // Debug
+    debugLog: mediaPipe.debugLog,
+    detectCountRef: mediaPipe.detectCountRef,
+    lastDetectResult: mediaPipe.lastResultRef,
+    detectError: mediaPipe.detectErrorRef,
   };
 }
