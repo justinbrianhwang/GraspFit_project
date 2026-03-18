@@ -21,7 +21,7 @@ export function useMediaPipe() {
 
   const addLog = (msg: string) => {
     console.log(`[MediaPipe] ${msg}`);
-    setDebugLog(prev => [...prev.slice(-15), `${new Date().toLocaleTimeString()} ${msg}`]);
+    setDebugLog(prev => [...prev.slice(-20), `${new Date().toLocaleTimeString()} ${msg}`]);
   };
 
   const initialize = useCallback(async () => {
@@ -29,51 +29,46 @@ export function useMediaPipe() {
     setIsLoading(true);
     setError(null);
     try {
-      addLog(`WASM CDN: ${MEDIAPIPE_WASM_CDN}`);
+      addLog(`WASM: ${MEDIAPIPE_WASM_CDN}`);
       const vision = await FilesetResolver.forVisionTasks(MEDIAPIPE_WASM_CDN);
-      addLog('WASM loaded OK');
+      addLog('WASM OK');
 
-      addLog(`Model URL: ${MEDIAPIPE_MODEL_URL}`);
+      addLog(`Model: ${MEDIAPIPE_MODEL_URL}`);
 
-      // Verify model file is accessible and not HTML fallback
-      const modelCheck = await fetch(MEDIAPIPE_MODEL_URL);
-      const contentType = modelCheck.headers.get('content-type') || '';
-      const contentLength = modelCheck.headers.get('content-length') || '0';
-      addLog(`Model fetch: ${modelCheck.status} type=${contentType} size=${contentLength}`);
+      // Verify model file is served correctly
+      const check = await fetch(MEDIAPIPE_MODEL_URL, { method: 'HEAD' });
+      const ct = check.headers.get('content-type') || '';
+      const cl = check.headers.get('content-length') || '?';
+      addLog(`HEAD: ${check.status} type=${ct} size=${cl}`);
 
-      if (!modelCheck.ok) {
-        throw new Error(`모델 파일 다운로드 실패 (HTTP ${modelCheck.status})`);
-      }
-      if (contentType.includes('text/html')) {
-        throw new Error(`모델 파일이 HTML로 반환됨 — 서버 배포 문제`);
+      if (ct.includes('text/html')) {
+        throw new Error('모델이 HTML로 반환됨 — 배포 문제');
       }
 
-      const modelBuffer = await modelCheck.arrayBuffer();
-      addLog(`Model buffer: ${modelBuffer.byteLength} bytes`);
-
-      if (modelBuffer.byteLength < 100000) {
-        throw new Error(`모델 파일 크기 비정상: ${modelBuffer.byteLength} bytes (예상: ~7.8MB)`);
-      }
-
+      // Use modelAssetPath — let MediaPipe fetch the model internally
+      addLog('Creating HandLandmarker (modelAssetPath)...');
       const handLandmarker = await HandLandmarker.createFromOptions(vision, {
         baseOptions: {
-          modelAssetBuffer: new Uint8Array(modelBuffer),
+          modelAssetPath: MEDIAPIPE_MODEL_URL,
           delegate: 'CPU',
         },
-        runningMode: 'IMAGE',
+        runningMode: 'VIDEO',
         numHands: 1,
         minHandDetectionConfidence: MIN_HAND_DETECTION_CONFIDENCE,
         minHandPresenceConfidence: MIN_HAND_PRESENCE_CONFIDENCE,
         minTrackingConfidence: MIN_TRACKING_CONFIDENCE,
       });
 
-      addLog('HandLandmarker created (IMAGE, CPU)');
+      addLog('HandLandmarker CREATED OK');
       handLandmarkerRef.current = handLandmarker;
       setIsReady(true);
+      addLog('MP READY = true');
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
+      const msg = err instanceof Error
+        ? `${err.message}\n${err.stack?.split('\n').slice(0, 3).join('\n')}`
+        : String(err);
       addLog(`INIT FAILED: ${msg}`);
-      setError(`손 인식 모델 로드 실패: ${msg}`);
+      setError(`초기화 실패: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setIsLoading(false);
     }
@@ -93,16 +88,17 @@ export function useMediaPipe() {
       }
 
       try {
-        const result = handLandmarkerRef.current.detect(videoFrame);
+        const ts = performance.now();
+        const result = handLandmarkerRef.current.detectForVideo(videoFrame, ts);
         if (result.landmarks && result.landmarks.length > 0) {
           lastResultRef.current = `OK: ${result.landmarks[0].length} pts`;
           detectErrorRef.current = null;
           return result.landmarks[0] as HandLandmark[];
         }
-        lastResultRef.current = `empty: landmarks=${result.landmarks?.length ?? 'null'}`;
+        lastResultRef.current = `empty (${result.landmarks?.length ?? 'null'})`;
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
-        lastResultRef.current = `ERROR: ${msg}`;
+        lastResultRef.current = `ERR: ${msg.slice(0, 60)}`;
         detectErrorRef.current = msg;
       }
       return null;

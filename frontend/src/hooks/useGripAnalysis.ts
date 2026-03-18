@@ -38,7 +38,6 @@ export function useGripAnalysis() {
         }
         lastFrameTimeRef.current = now;
 
-        const timestamp = performance.now();
         const landmarks = mediaPipe.detectHand(videoRef.current);
 
         if (landmarks) {
@@ -61,7 +60,7 @@ export function useGripAnalysis() {
               confidence: result.confidence,
               reconstructionError: result.reconstructionError,
               landmarks,
-              timestamp,
+              timestamp: performance.now(),
             });
           } catch {
             // Skip frame on inference error
