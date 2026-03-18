@@ -470,16 +470,18 @@ if _static_dir:
     from fastapi.responses import FileResponse
     import mimetypes
 
-    # Serve ALL static files and SPA fallback via a single catch-all.
-    # app.mount() has lower priority than @app.get() in FastAPI,
-    # so we handle everything here to guarantee static files are served correctly.
+    # Register custom MIME types for ML model files
+    mimetypes.add_type("application/octet-stream", ".task")
+    mimetypes.add_type("application/octet-stream", ".onnx")
+
     @app.get("/{full_path:path}")
     def serve_spa(full_path: str):
         if full_path:
             file_path = os.path.normpath(os.path.join(_static_dir, full_path))
-            # Security: prevent directory traversal
             if file_path.startswith(os.path.normpath(_static_dir)) and os.path.isfile(file_path):
                 content_type, _ = mimetypes.guess_type(file_path)
+                if not content_type:
+                    content_type = "application/octet-stream"
                 return FileResponse(file_path, media_type=content_type)
         return FileResponse(os.path.join(_static_dir, "index.html"))
 
