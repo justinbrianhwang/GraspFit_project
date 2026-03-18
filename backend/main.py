@@ -468,18 +468,19 @@ for _candidate in [
 
 if _static_dir:
     from fastapi.responses import FileResponse
+    import mimetypes
 
-    # Mount known static subdirectories so they are served directly
-    for _subdir in ["assets", "models", "images"]:
-        _subpath = os.path.join(_static_dir, _subdir)
-        if os.path.isdir(_subpath):
-            app.mount(f"/{_subdir}", StaticFiles(directory=_subpath), name=_subdir)
-
+    # Serve ALL static files and SPA fallback via a single catch-all.
+    # app.mount() has lower priority than @app.get() in FastAPI,
+    # so we handle everything here to guarantee static files are served correctly.
     @app.get("/{full_path:path}")
     def serve_spa(full_path: str):
-        file_path = os.path.join(_static_dir, full_path)
-        if full_path and os.path.isfile(file_path):
-            return FileResponse(file_path)
+        if full_path:
+            file_path = os.path.normpath(os.path.join(_static_dir, full_path))
+            # Security: prevent directory traversal
+            if file_path.startswith(os.path.normpath(_static_dir)) and os.path.isfile(file_path):
+                content_type, _ = mimetypes.guess_type(file_path)
+                return FileResponse(file_path, media_type=content_type)
         return FileResponse(os.path.join(_static_dir, "index.html"))
 
 

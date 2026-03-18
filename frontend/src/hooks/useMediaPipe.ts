@@ -35,17 +35,29 @@ export function useMediaPipe() {
 
       addLog(`Model URL: ${MEDIAPIPE_MODEL_URL}`);
 
-      // Verify model file is accessible
-      try {
-        const modelCheck = await fetch(MEDIAPIPE_MODEL_URL, { method: 'HEAD' });
-        addLog(`Model HEAD: ${modelCheck.status} ${modelCheck.headers.get('content-type')} size=${modelCheck.headers.get('content-length')}`);
-      } catch (e) {
-        addLog(`Model HEAD failed: ${e}`);
+      // Verify model file is accessible and not HTML fallback
+      const modelCheck = await fetch(MEDIAPIPE_MODEL_URL);
+      const contentType = modelCheck.headers.get('content-type') || '';
+      const contentLength = modelCheck.headers.get('content-length') || '0';
+      addLog(`Model fetch: ${modelCheck.status} type=${contentType} size=${contentLength}`);
+
+      if (!modelCheck.ok) {
+        throw new Error(`모델 파일 다운로드 실패 (HTTP ${modelCheck.status})`);
+      }
+      if (contentType.includes('text/html')) {
+        throw new Error(`모델 파일이 HTML로 반환됨 — 서버 배포 문제`);
+      }
+
+      const modelBuffer = await modelCheck.arrayBuffer();
+      addLog(`Model buffer: ${modelBuffer.byteLength} bytes`);
+
+      if (modelBuffer.byteLength < 100000) {
+        throw new Error(`모델 파일 크기 비정상: ${modelBuffer.byteLength} bytes (예상: ~7.8MB)`);
       }
 
       const handLandmarker = await HandLandmarker.createFromOptions(vision, {
         baseOptions: {
-          modelAssetPath: MEDIAPIPE_MODEL_URL,
+          modelAssetBuffer: new Uint8Array(modelBuffer),
           delegate: 'CPU',
         },
         runningMode: 'IMAGE',
