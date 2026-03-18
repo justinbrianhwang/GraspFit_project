@@ -64,13 +64,18 @@ export default function CameraPage() {
     if (!modelsLoading && videoElRef.current) {
       camera.start(videoElRef.current);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modelsLoading]);
+
+  // Cleanup on unmount only
+  useEffect(() => {
     return () => {
       camera.stop();
       grip.stopAnalysis();
       grip.destroyMediaPipe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modelsLoading]);
+  }, []);
 
   const handleVideoResize = () => {
     if (videoElRef.current) {
