@@ -768,7 +768,7 @@ export default function SystemPage() {
                     <a href="https://www.sjhwang.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: '#4DB6AC' }}>www.sjhwang.com</a>
                   </td>
                   <td>연세대학교 소프트웨어학부</td>
-                  <td>시스템 개발</td>
+                  <td>웹 개발, AI 알고리즘 개발, 컴퓨터 비전 알고리즘 개발</td>
                 </tr>
                 <tr>
                   <td>이지윤 (Jiyoon Lee)</td>
