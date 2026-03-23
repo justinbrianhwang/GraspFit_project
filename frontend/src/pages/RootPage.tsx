@@ -214,7 +214,7 @@ export default function RootPage() {
               type="range"
               className="root-threshold-slider"
               min={0.001}
-              max={0.5}
+              max={2.0}
               step={0.001}
               value={sliderValue}
               onChange={(e) => setSliderValue(parseFloat(e.target.value))}

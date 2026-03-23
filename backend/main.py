@@ -428,7 +428,7 @@ def get_threshold(db: Session = Depends(get_db)):
 
 @app.put("/api/settings/threshold")
 def update_threshold(
-    value: float = Query(..., ge=0.001, le=0.5),
+    value: float = Query(..., ge=0.001, le=2.0),
     admin_id: int = Query(...),
     db: Session = Depends(get_db),
 ):
