@@ -96,9 +96,7 @@ export default function HomePage() {
               </div>
             </div>
             <div className="instrument-card" onClick={() => navigate('/camera')}>
-              <div className="instrument-img" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48 }}>
-                🦷
-              </div>
+              <img src="/images/sickle_scaler.jpeg" alt="Sickle Scaler" className="instrument-img" />
               <div className="instrument-info">
                 <h4>Sickle Scaler</h4>
                 <p>Modified Pen Grasp</p>
