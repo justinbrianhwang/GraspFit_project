@@ -5,7 +5,7 @@ import { api } from '../lib/api';
 import type { UserStats } from '../types';
 import {
   Camera, History, BookOpen, LogOut, ChevronRight,
-  Target, Clock, TrendingUp, BarChart3, Shield, Terminal,
+  Target, TrendingUp, BarChart3, Shield, Terminal,
 } from 'lucide-react';
 import './HomePage.css';
 
@@ -95,14 +95,14 @@ export default function HomePage() {
                 <span className="instrument-badge">기본 기구</span>
               </div>
             </div>
-            <div className="instrument-card coming-soon-card">
-              <div className="instrument-img coming-soon-img">
-                <Clock size={24} />
+            <div className="instrument-card" onClick={() => navigate('/camera')}>
+              <div className="instrument-img" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48 }}>
+                🦷
               </div>
               <div className="instrument-info">
-                <h4>새 기구</h4>
-                <p>준비 중</p>
-                <span className="instrument-badge coming-soon-badge">Coming Soon</span>
+                <h4>Sickle Scaler</h4>
+                <p>Modified Pen Grasp</p>
+                <span className="instrument-badge">치석 제거용</span>
               </div>
             </div>
           </div>
