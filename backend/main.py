@@ -53,7 +53,7 @@ def require_root(root_id: int, db: Session) -> User:
 
 # ── Users ──────────────────────────────────────────────────
 
-DEFAULT_THRESHOLD = 0.007291107764467597  # From model_meta.json threshold_train95
+DEFAULT_THRESHOLD = 0.10  # 기본값을 관대하게 설정 (model_meta 원본: 0.00729)
 
 
 @app.post("/api/users", response_model=UserResponse)
@@ -428,7 +428,7 @@ def get_threshold(db: Session = Depends(get_db)):
 
 @app.put("/api/settings/threshold")
 def update_threshold(
-    value: float = Query(..., ge=0.001, le=0.05),
+    value: float = Query(..., ge=0.001, le=0.5),
     admin_id: int = Query(...),
     db: Session = Depends(get_db),
 ):

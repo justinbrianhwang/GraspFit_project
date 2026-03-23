@@ -28,7 +28,7 @@ export default function RootPage() {
 
   // Threshold state
   const [currentThreshold, setCurrentThreshold] = useState<number | null>(null);
-  const [sliderValue, setSliderValue] = useState<number>(0.00729);
+  const [sliderValue, setSliderValue] = useState<number>(0.10);
   const [thresholdSaving, setThresholdSaving] = useState(false);
 
   useEffect(() => {
@@ -214,14 +214,14 @@ export default function RootPage() {
               type="range"
               className="root-threshold-slider"
               min={0.001}
-              max={0.05}
-              step={0.0001}
+              max={0.5}
+              step={0.001}
               value={sliderValue}
               onChange={(e) => setSliderValue(parseFloat(e.target.value))}
             />
             <div className="root-threshold-values">
-              <span>현재: {currentThreshold?.toFixed(6) ?? '...'}</span>
-              <span>설정: {sliderValue.toFixed(6)}</span>
+              <span>현재: {currentThreshold?.toFixed(4) ?? '...'}</span>
+              <span>설정: {sliderValue.toFixed(4)}</span>
             </div>
             <button
               className="root-threshold-save-btn"
