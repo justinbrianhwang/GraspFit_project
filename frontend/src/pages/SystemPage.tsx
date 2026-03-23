@@ -749,9 +749,50 @@ export default function SystemPage() {
           </div>
         </section>
 
+        {/* Team */}
+        <section className="sys-section">
+          <h2 className="sys-section-title">
+            <span className="sys-num">10</span>
+            개발팀
+          </h2>
+          <div className="sys-info-box">
+            <table className="sys-table">
+              <thead>
+                <tr><td><strong>이름</strong></td><td><strong>소속</strong></td><td><strong>역할</strong></td></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    황선준 (Sunjun Brian Hwang)
+                    <br />
+                    <a href="https://www.sjhwang.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: '#4DB6AC' }}>www.sjhwang.com</a>
+                  </td>
+                  <td>연세대학교 소프트웨어학부</td>
+                  <td>시스템 개발</td>
+                </tr>
+                <tr>
+                  <td>이지윤 (Jiyoon Lee)</td>
+                  <td>연세대학교 치위생학부</td>
+                  <td>도메인 연구</td>
+                </tr>
+                <tr>
+                  <td>송혜인 (Hyein Song)</td>
+                  <td>연세대학교 치위생학부</td>
+                  <td>도메인 연구</td>
+                </tr>
+                <tr>
+                  <td>박혜진 (Hyejin Park)</td>
+                  <td>연세대학교 치위생학부</td>
+                  <td>도메인 연구</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         <div className="sys-footer">
           <p>GraspFit — AI 기반 치과 기구 파지법 교육 시스템</p>
-          <p className="sys-footer-sub">본 문서는 시스템의 기술적 원리를 설명하기 위한 참고 자료입니다.</p>
+          <p className="sys-footer-sub">연세대학교 소프트웨어학부 · 치위생학부 공동 개발</p>
         </div>
       </div>
     </div>
