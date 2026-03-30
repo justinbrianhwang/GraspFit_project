@@ -152,6 +152,11 @@ export default function HomePage() {
             <ChevronRight size={16} />
           </button>
         )}
+
+        <footer className="home-footer">
+          <p>GraspFit</p>
+          <a href="https://www.sjhwang.com" target="_blank" rel="noopener noreferrer">www.sjhwang.com</a>
+        </footer>
       </div>
     </div>
   );
