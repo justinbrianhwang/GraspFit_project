@@ -200,6 +200,41 @@ export default function RootPage() {
           </button>
         </div>
 
+        <div className="root-team-footer">
+          <h3>개발팀</h3>
+          <div className="root-team-members">
+            <div className="root-team-member">
+              <img src="/images/team/hwang_sunjun.png" alt="황선준" />
+              <div>
+                <strong>황선준</strong>
+                <span>소프트웨어학부 · 웹/AI/CV 개발</span>
+              </div>
+            </div>
+            <div className="root-team-member">
+              <img src="/images/team/lee_jiyoon.png" alt="이지윤" />
+              <div>
+                <strong>이지윤</strong>
+                <span>치위생학부 · 도메인 연구</span>
+              </div>
+            </div>
+            <div className="root-team-member">
+              <img src="/images/team/song_hyein.png" alt="송혜인" />
+              <div>
+                <strong>송혜인</strong>
+                <span>치위생학부 · 도메인 연구</span>
+              </div>
+            </div>
+            <div className="root-team-member">
+              <img src="/images/team/park_hyejin.png" alt="박혜진" />
+              <div>
+                <strong>박혜진</strong>
+                <span>치위생학부 · 도메인 연구</span>
+              </div>
+            </div>
+          </div>
+          <a href="https://www.sjhwang.com" target="_blank" rel="noopener noreferrer" className="root-team-link">www.sjhwang.com</a>
+        </div>
+
         {/* Threshold slider */}
         <div className="root-threshold-section">
           <h2 className="root-section-title">

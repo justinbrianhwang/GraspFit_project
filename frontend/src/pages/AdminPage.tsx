@@ -246,6 +246,41 @@ export default function AdminPage() {
           <span style={{ fontSize: 14, fontWeight: 500 }}>시스템 원리 설명</span>
           <ChevronRight size={16} />
         </button>
+
+        <div className="admin-team-footer">
+          <h3>개발팀</h3>
+          <div className="admin-team-members">
+            <div className="admin-team-member">
+              <img src="/images/team/hwang_sunjun.png" alt="황선준" />
+              <div>
+                <strong>황선준</strong>
+                <span>소프트웨어학부 · 웹/AI/CV 개발</span>
+              </div>
+            </div>
+            <div className="admin-team-member">
+              <img src="/images/team/lee_jiyoon.png" alt="이지윤" />
+              <div>
+                <strong>이지윤</strong>
+                <span>치위생학부 · 도메인 연구</span>
+              </div>
+            </div>
+            <div className="admin-team-member">
+              <img src="/images/team/song_hyein.png" alt="송혜인" />
+              <div>
+                <strong>송혜인</strong>
+                <span>치위생학부 · 도메인 연구</span>
+              </div>
+            </div>
+            <div className="admin-team-member">
+              <img src="/images/team/park_hyejin.png" alt="박혜진" />
+              <div>
+                <strong>박혜진</strong>
+                <span>치위생학부 · 도메인 연구</span>
+              </div>
+            </div>
+          </div>
+          <a href="https://www.sjhwang.com" target="_blank" rel="noopener noreferrer" className="admin-team-link">www.sjhwang.com</a>
+        </div>
       </div>
 
       {/* Student detail modal */}

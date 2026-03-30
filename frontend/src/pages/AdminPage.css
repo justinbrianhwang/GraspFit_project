@@ -557,10 +557,59 @@
   margin: 0;
 }
 
+/* ── Team Footer ── */
+.admin-team-footer {
+  margin-top: 32px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid var(--color-border-light);
+}
+.admin-team-footer h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 14px;
+  color: var(--color-text-primary);
+}
+.admin-team-members {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.admin-team-member {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.admin-team-member img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.admin-team-member strong {
+  display: block;
+  font-size: 13px;
+  color: var(--color-text-primary);
+}
+.admin-team-member span {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+}
+.admin-team-link {
+  display: block;
+  text-align: center;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
 @media (max-width: 480px) {
   .summary-cards { gap: 8px; }
   .summary-card { padding: 14px 8px; }
   .summary-value { font-size: 18px; }
   .detail-stats { grid-template-columns: repeat(2, 1fr); }
   .student-stats-mini { display: none; }
+  .admin-team-members { grid-template-columns: 1fr; }
 }
