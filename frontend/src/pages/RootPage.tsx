@@ -149,7 +149,7 @@ export default function RootPage() {
         <div className="root-header-bg" />
         <div className="root-header-content">
           <div className="root-header-top">
-            <div className="root-brand">
+            <div className="root-brand" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
               <svg width="28" height="28" viewBox="0 0 64 64" fill="none">
                 <circle cx="32" cy="32" r="30" fill="rgba(255,255,255,0.2)" />
                 <path d="M22 40 C22 30 27 22 32 20 C37 22 42 30 42 40" stroke="#fff" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
