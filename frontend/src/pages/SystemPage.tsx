@@ -755,38 +755,44 @@ export default function SystemPage() {
             <span className="sys-num">10</span>
             개발팀
           </h2>
-          <div className="sys-info-box">
-            <table className="sys-table">
-              <thead>
-                <tr><td><strong>이름</strong></td><td><strong>소속</strong></td><td><strong>역할</strong></td></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    황선준 (Sunjun Brian Hwang)
-                    <br />
-                    <a href="https://www.sjhwang.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: '#4DB6AC' }}>www.sjhwang.com</a>
-                  </td>
-                  <td>연세대학교 소프트웨어학부</td>
-                  <td>웹 개발, AI 알고리즘 개발, 컴퓨터 비전 알고리즘 개발</td>
-                </tr>
-                <tr>
-                  <td>이지윤 (Jiyoon Lee)</td>
-                  <td>연세대학교 치위생학부</td>
-                  <td>도메인 연구</td>
-                </tr>
-                <tr>
-                  <td>송혜인 (Hyein Song)</td>
-                  <td>연세대학교 치위생학부</td>
-                  <td>도메인 연구</td>
-                </tr>
-                <tr>
-                  <td>박혜진 (Hyejin Park)</td>
-                  <td>연세대학교 치위생학부</td>
-                  <td>도메인 연구</td>
-                </tr>
-              </tbody>
-            </table>
+          <div className="team-grid">
+            <div className="team-card team-card-lead">
+              <img src="/images/team/hwang_sunjun.png" alt="황선준" className="team-photo" />
+              <div className="team-info">
+                <h4>황선준</h4>
+                <p className="team-name-en">Sunjun Brian Hwang</p>
+                <p className="team-dept">연세대학교 소프트웨어학부</p>
+                <p className="team-role">웹 개발, AI 알고리즘 개발, 컴퓨터 비전 알고리즘 개발</p>
+                <a href="https://www.sjhwang.com" target="_blank" rel="noopener noreferrer" className="team-link">www.sjhwang.com</a>
+              </div>
+            </div>
+            <div className="team-card">
+              <img src="/images/team/lee_jiyoon.png" alt="이지윤" className="team-photo" />
+              <div className="team-info">
+                <h4>이지윤</h4>
+                <p className="team-name-en">Jiyoon Lee</p>
+                <p className="team-dept">연세대학교 치위생학부</p>
+                <p className="team-role">도메인 연구</p>
+              </div>
+            </div>
+            <div className="team-card">
+              <img src="/images/team/song_hyein.png" alt="송혜인" className="team-photo" />
+              <div className="team-info">
+                <h4>송혜인</h4>
+                <p className="team-name-en">Hyein Song</p>
+                <p className="team-dept">연세대학교 치위생학부</p>
+                <p className="team-role">도메인 연구</p>
+              </div>
+            </div>
+            <div className="team-card">
+              <img src="/images/team/park_hyejin.png" alt="박혜진" className="team-photo" />
+              <div className="team-info">
+                <h4>박혜진</h4>
+                <p className="team-name-en">Hyejin Park</p>
+                <p className="team-dept">연세대학교 치위생학부</p>
+                <p className="team-role">도메인 연구</p>
+              </div>
+            </div>
           </div>
         </section>
 
