@@ -138,6 +138,43 @@ export default function GuidePage() {
           )}
         </div>
 
+        {/* 개발팀 소개 */}
+        <div className="guide-team">
+          <h3>개발팀</h3>
+          <div className="guide-team-members">
+            <div className="guide-team-member">
+              <img src="/images/team/hwang_sunjun.png" alt="황선준" />
+              <div>
+                <strong>황선준 (Sunjun Brian Hwang)</strong>
+                <span>연세대학교 소프트웨어학부</span>
+                <span className="guide-team-role">웹 개발, AI 알고리즘 개발, 컴퓨터 비전 알고리즘 개발</span>
+                <a href="https://www.sjhwang.com" target="_blank" rel="noopener noreferrer">www.sjhwang.com</a>
+              </div>
+            </div>
+            <div className="guide-team-member">
+              <img src="/images/team/lee_jiyoon.png" alt="이지윤" />
+              <div>
+                <strong>이지윤 (Jiyoon Lee)</strong>
+                <span>연세대학교 치위생학부 · 도메인 연구</span>
+              </div>
+            </div>
+            <div className="guide-team-member">
+              <img src="/images/team/song_hyein.png" alt="송혜인" />
+              <div>
+                <strong>송혜인 (Hyein Song)</strong>
+                <span>연세대학교 치위생학부 · 도메인 연구</span>
+              </div>
+            </div>
+            <div className="guide-team-member">
+              <img src="/images/team/park_hyejin.png" alt="박혜진" />
+              <div>
+                <strong>박혜진 (Hyejin Park)</strong>
+                <span>연세대학교 치위생학부 · 도메인 연구</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="guide-footer">
           <button className="btn-primary start-btn" onClick={() => navigate('/')}>
             시작하기 <ArrowRight size={18} />

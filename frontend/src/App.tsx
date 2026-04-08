@@ -29,7 +29,7 @@ function AppRoutes() {
       <Route path="/history" element={<HistoryPage />} />
       {isAdmin && <Route path="/admin" element={<AdminPage />} />}
       {isRoot && <Route path="/root" element={<RootPage />} />}
-      {isAdmin && <Route path="/system" element={<SystemPage />} />}
+      <Route path="/system" element={<SystemPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
