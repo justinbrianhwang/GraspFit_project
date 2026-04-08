@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, Hand, CheckCircle, Clock, ArrowRight, AlertCircle } from 'lucide-react';
+import { Camera, Hand, CheckCircle, Clock, ArrowRight, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import './GuidePage.css';
 
 const steps = [
@@ -31,6 +32,7 @@ const steps = [
 
 export default function GuidePage() {
   const navigate = useNavigate();
+  const [showPrinciple, setShowPrinciple] = useState(false);
 
   return (
     <div className="guide-page">
@@ -89,6 +91,51 @@ export default function GuidePage() {
               className="reference-img"
             />
           </div>
+        </div>
+
+        {/* 시스템 원리 섹션 */}
+        <div className="guide-principle">
+          <button className="principle-toggle" onClick={() => setShowPrinciple(!showPrinciple)}>
+            <h3>어떻게 그립을 분석하나요?</h3>
+            {showPrinciple ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+          </button>
+
+          {showPrinciple && (
+            <div className="principle-content">
+              <div className="principle-step">
+                <div className="principle-num">1</div>
+                <div>
+                  <strong>손 인식 (MediaPipe)</strong>
+                  <p>카메라 영상에서 AI가 손의 21개 관절 위치를 실시간으로 감지합니다.</p>
+                </div>
+              </div>
+              <div className="principle-step">
+                <div className="principle-num">2</div>
+                <div>
+                  <strong>좌표 정규화</strong>
+                  <p>손목을 기준으로 모든 관절 좌표를 변환하여, 손의 위치나 크기에 관계없이 일관된 분석이 가능합니다.</p>
+                </div>
+              </div>
+              <div className="principle-step">
+                <div className="principle-num">3</div>
+                <div>
+                  <strong>AI 판별 (오토인코더)</strong>
+                  <p>올바른 그립 데이터로 학습된 AI 모델이 현재 자세를 분석합니다. 올바른 그립과 차이가 클수록 높은 오차(MSE)가 발생합니다.</p>
+                </div>
+              </div>
+              <div className="principle-step">
+                <div className="principle-num">4</div>
+                <div>
+                  <strong>결과 판정</strong>
+                  <p>오차가 임계값 이하면 올바른 그립(초록), 초과하면 교정 필요(빨강)로 표시됩니다.</p>
+                </div>
+              </div>
+
+              <button className="principle-detail-btn" onClick={() => navigate('/system')}>
+                자세한 기술 설명 보기 <ArrowRight size={16} />
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="guide-footer">

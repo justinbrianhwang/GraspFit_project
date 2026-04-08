@@ -7,7 +7,7 @@ import Modal from '../components/common/Modal';
 import {
   LogOut, Users, CheckCircle, TrendingUp,
   Clock, BarChart3, Send, MessageSquare,
-  ChevronRight, Award, AlertCircle, BookOpen, Sliders,
+  ChevronRight, Award, AlertCircle, Sliders,
 } from 'lucide-react';
 import './AdminPage.css';
 
@@ -235,17 +235,6 @@ export default function AdminPage() {
             ))}
           </div>
         )}
-
-        {/* System link */}
-        <button
-          className="student-card"
-          style={{ justifyContent: 'center', gap: 8, marginTop: 20 }}
-          onClick={() => navigate('/system')}
-        >
-          <BookOpen size={18} />
-          <span style={{ fontSize: 14, fontWeight: 500 }}>시스템 원리 설명</span>
-          <ChevronRight size={16} />
-        </button>
 
         <div className="admin-team-footer">
           <h3>개발팀</h3>
