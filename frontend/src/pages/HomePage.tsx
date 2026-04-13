@@ -20,6 +20,7 @@ export default function HomePage() {
     }
   }, [user?.id]);
 
+
   const handleLogout = () => {
     logout();
     navigate('/login');

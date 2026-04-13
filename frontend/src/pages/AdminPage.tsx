@@ -312,19 +312,28 @@ export default function AdminPage() {
               <p className="detail-empty">기록이 없습니다.</p>
             ) : (
               <div className="detail-records">
-                {studentRecords.slice(0, 20).map((r) => (
-                  <div key={r.id} className={`detail-record ${r.correctRate >= 50 ? 'good' : 'poor'}`}>
-                    <div className="record-date-col">
-                      {new Date(r.createdAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
+                {studentRecords.slice(0, 30).map((r) => {
+                  const isAuto = r.memo?.startsWith('[자동저장]');
+                  return (
+                    <div
+                      key={r.id}
+                      className={`detail-record ${r.correctRate >= 50 ? 'good' : 'poor'}${isAuto ? ' auto-saved' : ''}`}
+                    >
+                      <div className="record-date-col">
+                        {new Date(r.createdAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
+                        {' '}
+                        {new Date(r.createdAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
+                        {isAuto && <span className="auto-save-badge">자동저장</span>}
+                      </div>
+                      <div className="record-time-col">
+                        {Math.round(r.durationSeconds / 60)}분 {r.durationSeconds % 60}초
+                      </div>
+                      <div className="record-rate-col">
+                        {r.correctRate.toFixed(0)}%
+                      </div>
                     </div>
-                    <div className="record-time-col">
-                      {Math.round(r.durationSeconds / 60)}분
-                    </div>
-                    <div className="record-rate-col">
-                      {r.correctRate.toFixed(0)}%
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 

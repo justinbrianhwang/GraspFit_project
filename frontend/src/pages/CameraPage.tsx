@@ -104,6 +104,32 @@ export default function CameraPage() {
     wasCorrectRef.current = isCorrect;
   }, [grip.lastResult, isPracticing, playWarningBeep]);
 
+  // ── Crash safety net: autosave snapshots to backend every 30s ──
+  const timerRef = useRef(timer);
+  const gripRef = useRef(grip);
+  timerRef.current = timer;
+  gripRef.current = grip;
+
+  useEffect(() => {
+    if (!isPracticing || !user?.id) return;
+    const remoteSave = () => {
+      const s = timerRef.current.session;
+      if (s.totalFrames === 0 || s.elapsedSeconds < 10) return;
+      const correctRate = Math.round((s.correctFrames / s.totalFrames) * 100);
+      api.saveRecord({
+        userId: user.id!,
+        isCorrect: s.correctFrames > s.totalFrames / 2,
+        mseScore: gripRef.current.lastResult?.reconstructionError ?? 0,
+        confidence: gripRef.current.lastResult?.confidence ?? 0,
+        durationSeconds: s.elapsedSeconds,
+        correctRate,
+        memo: '[자동저장] 앱 종료 대비 중간 스냅샷',
+      }).catch(() => { /* silent */ });
+    };
+    const id = window.setInterval(remoteSave, 30000);
+    return () => clearInterval(id);
+  }, [isPracticing, user?.id]);
+
   const handleStartPractice = () => {
     if (!videoElRef.current) return;
     setIsPracticing(true);

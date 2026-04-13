@@ -557,6 +557,24 @@
   margin: 0;
 }
 
+/* ── Auto-saved record badge ── */
+.detail-record.auto-saved {
+  opacity: 0.85;
+  border-left: 3px solid #FFB74D;
+  background: rgba(255, 183, 77, 0.06);
+}
+.auto-save-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #F57C00;
+  background: rgba(245, 124, 0, 0.12);
+  border-radius: 6px;
+  vertical-align: middle;
+}
+
 /* ── Team Footer ── */
 .admin-team-footer {
   margin-top: 32px;
