@@ -7,7 +7,7 @@ import Modal from '../components/common/Modal';
 import {
   LogOut, Users, CheckCircle, TrendingUp,
   Clock, BarChart3, Send, MessageSquare,
-  ChevronRight, Award, AlertCircle, Sliders,
+  ChevronRight, Award, AlertCircle, Sliders, Calendar,
 } from 'lucide-react';
 import './AdminPage.css';
 
@@ -304,6 +304,57 @@ export default function AdminPage() {
               </div>
             </div>
 
+            {/* Daily summary */}
+            <h3 className="detail-section-title">
+              <Calendar size={16} /> 날짜별 연습 (최근 14일)
+            </h3>
+            {detailLoading ? (
+              <p className="detail-loading">로딩 중...</p>
+            ) : (() => {
+              const dailyMap = new Map<string, number>();
+              for (const r of studentRecords) {
+                if (r.memo?.startsWith('[자동저장]')) continue;
+                const d = new Date(r.createdAt);
+                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                dailyMap.set(key, (dailyMap.get(key) ?? 0) + r.durationSeconds);
+              }
+              const today = new Date();
+              const days: { date: Date; key: string; seconds: number }[] = [];
+              for (let i = 13; i >= 0; i--) {
+                const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                days.push({ date: d, key, seconds: dailyMap.get(key) ?? 0 });
+              }
+              const last7 = days.slice(-7);
+              const goalMet7 = last7.filter((d) => d.seconds >= 1200).length;
+              return (
+                <>
+                  <p className="daily-goal-summary">
+                    최근 7일 중 <strong>{goalMet7}일</strong> 20분 이상 연습 (목표: 3일)
+                  </p>
+                  <div className="daily-grid">
+                    {days.map((d) => {
+                      const minutes = Math.floor(d.seconds / 60);
+                      const goalMet = d.seconds >= 1200;
+                      const hasAny = d.seconds > 0;
+                      return (
+                        <div
+                          key={d.key}
+                          className={`daily-cell ${goalMet ? 'met' : hasAny ? 'partial' : 'none'}`}
+                          title={`${d.date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric', weekday: 'short' })} — ${minutes}분`}
+                        >
+                          <span className="daily-cell-date">
+                            {d.date.getMonth() + 1}/{d.date.getDate()}
+                          </span>
+                          <span className="daily-cell-minutes">{minutes}분</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              );
+            })()}
+
             {/* Records */}
             <h3 className="detail-section-title">연습 기록</h3>
             {detailLoading ? (
@@ -312,7 +363,7 @@ export default function AdminPage() {
               <p className="detail-empty">기록이 없습니다.</p>
             ) : (
               <div className="detail-records">
-                {studentRecords.slice(0, 30).map((r) => {
+                {studentRecords.slice(0, 100).map((r) => {
                   const isAuto = r.memo?.startsWith('[자동저장]');
                   return (
                     <div

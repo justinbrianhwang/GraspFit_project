@@ -203,14 +203,14 @@ def _build_user_stats(records: list[PracticeRecord]) -> UserStats:
         for day, d in sorted(daily.items(), reverse=True)
     ]
 
-    # Weekly days
-    now = datetime.now(timezone.utc)
-    week_start = now - timedelta(days=7)
+    # Weekly days — compare day strings (YYYY-MM-DD) against the date 6 days ago at midnight UTC
+    today_utc = datetime.now(timezone.utc).date()
+    week_start_date = today_utc - timedelta(days=6)  # inclusive 7-day window: today + 6 prior days
     weekly_days = 0
     for day, d in daily.items():
         try:
-            day_dt = datetime.strptime(day, "%Y-%m-%d").replace(tzinfo=timezone.utc)
-            if day_dt >= week_start and d["seconds"] >= 1200:
+            day_date = datetime.strptime(day, "%Y-%m-%d").date()
+            if day_date >= week_start_date and d["seconds"] >= 1200:
                 weekly_days += 1
         except ValueError:
             pass
