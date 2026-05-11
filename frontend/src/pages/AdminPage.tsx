@@ -306,31 +306,39 @@ export default function AdminPage() {
 
             {/* Daily summary */}
             <h3 className="detail-section-title">
-              <Calendar size={16} /> 날짜별 연습 (최근 14일)
+              <Calendar size={16} /> 날짜별 연습 (최근 30일)
             </h3>
             {detailLoading ? (
               <p className="detail-loading">로딩 중...</p>
             ) : (() => {
               const dailyMap = new Map<string, number>();
+              let oldestDate: Date | null = null;
               for (const r of studentRecords) {
                 if (r.memo?.startsWith('[자동저장]')) continue;
                 const d = new Date(r.createdAt);
                 const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
                 dailyMap.set(key, (dailyMap.get(key) ?? 0) + r.durationSeconds);
+                if (!oldestDate || d < oldestDate) oldestDate = d;
               }
               const today = new Date();
               const days: { date: Date; key: string; seconds: number }[] = [];
-              for (let i = 13; i >= 0; i--) {
+              for (let i = 29; i >= 0; i--) {
                 const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
                 const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
                 days.push({ date: d, key, seconds: dailyMap.get(key) ?? 0 });
               }
               const last7 = days.slice(-7);
               const goalMet7 = last7.filter((d) => d.seconds >= 1200).length;
+              const totalPracticeDays = Array.from(dailyMap.values()).filter((s) => s >= 1200).length;
               return (
                 <>
                   <p className="daily-goal-summary">
                     최근 7일 중 <strong>{goalMet7}일</strong> 20분 이상 연습 (목표: 3일)
+                    <br />
+                    <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>
+                      전체 기간 중 20분 이상 연습한 날: {totalPracticeDays}일
+                      {oldestDate && ` · 가장 오래된 기록: ${oldestDate.toLocaleDateString('ko-KR')}`}
+                    </span>
                   </p>
                   <div className="daily-grid">
                     {days.map((d) => {
@@ -356,14 +364,18 @@ export default function AdminPage() {
             })()}
 
             {/* Records */}
-            <h3 className="detail-section-title">연습 기록</h3>
+            <h3 className="detail-section-title">
+              연습 기록 <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--color-text-tertiary)' }}>
+                (전체 {studentRecords.length}개)
+              </span>
+            </h3>
             {detailLoading ? (
               <p className="detail-loading">로딩 중...</p>
             ) : studentRecords.length === 0 ? (
               <p className="detail-empty">기록이 없습니다.</p>
             ) : (
               <div className="detail-records">
-                {studentRecords.slice(0, 100).map((r) => {
+                {studentRecords.map((r) => {
                   const isAuto = r.memo?.startsWith('[자동저장]');
                   return (
                     <div
